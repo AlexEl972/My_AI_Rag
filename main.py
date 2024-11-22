@@ -23,7 +23,7 @@ class RAGChatbot:
         local_file = 'downloaded_document.txt'
         s3.download_file(bucket, document_key, local_file)
         
-        with open(local_file, 'r') as f:
+        with open(local_file, 'rb') as f:
             self.document = f.read()
         
         self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
