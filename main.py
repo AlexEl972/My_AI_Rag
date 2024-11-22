@@ -1,6 +1,3 @@
-### 3. Mise à Jour du Script Python
-
-
 import os
 import boto3
 import ollama
