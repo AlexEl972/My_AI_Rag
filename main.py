@@ -39,8 +39,6 @@ class RAGChatbot:
             documents=[self.document],
             ids=["doc_1"]
         )
-        
-        self.model = os.getenv('OLLAMA_MODEL', 'mistral')
     
     def retrieve_context(self, query, top_k=2):
         query_embedding = self.embedding_model.encode([query])[0].tolist()
