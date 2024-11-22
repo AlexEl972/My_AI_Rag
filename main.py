@@ -4,6 +4,7 @@ import ollama
 from dotenv import load_dotenv
 from sentence_transformers import SentenceTransformer
 import chromadb
+import PyPDF2 
 
 load_dotenv()
 
@@ -20,11 +21,16 @@ class RAGChatbot:
         bucket = os.getenv('S3_BUCKET')
         document_key = os.getenv('S3_DOCUMENT_KEY')
         
-        local_file = 'downloaded_document.txt'
+        local_file = 'harry-potter-1-lecole-des-sorciers.pdf'
         s3.download_file(bucket, document_key, local_file)
         
         with open(local_file, 'rb') as f:
-            self.document = f.read()
+            pdf_reader = PyPDF2.PdfReader(f)
+            self.document = ""
+            for page in pdf_reader.pages:
+                self.document += page.extract_text() + "\n"
+        
+        os.remove(local_file)
         
         self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
         
@@ -39,6 +45,8 @@ class RAGChatbot:
             documents=[self.document],
             ids=["doc_1"]
         )
+        
+        self.model = os.getenv('OLLAMA_MODEL', 'mistral')
     
     def retrieve_context(self, query, top_k=2):
         query_embedding = self.embedding_model.encode([query])[0].tolist()
